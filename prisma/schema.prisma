@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+  @@map("Accounts")
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  name          String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  posts         Post[]
+  @@map("Users")
+}
+
+model Post {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  text        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    String    @db.ObjectId
+  scheduledAt DateTime? 
+  publishedAt DateTime?  
+  status     PostStatus @default(DRAFT)
+  mediaUrls  String[]   @default([])
+  @@map("Posts")
+}
+
+enum PostStatus {
+  DRAFT       // Still editing
+  SCHEDULED   // Ready to be published at scheduledAt
+  PUBLISHED   // Successfully published
+  FAILED      // Failed to publish
+}

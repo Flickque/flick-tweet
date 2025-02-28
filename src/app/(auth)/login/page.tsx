@@ -1,6 +1,5 @@
+import { LoginButton } from '@/components/modules/login/LoginButton';
 import type { Metadata } from 'next';
-import { UserAuthForm } from './components/UserLoginForm';
-
 export const metadata: Metadata = {
 	title: 'Login - Flick Tweet',
 	description: 'Login to Flick Tweet with your Twitter account',
@@ -17,7 +16,7 @@ export default function Login() {
 							Schedule and manage your tweets with ease.
 						</p>
 					</div>
-					<UserAuthForm />
+					<LoginButton />
 				</div>
 			</div>
 			<div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">

@@ -1,7 +1,11 @@
 import type { Metadata } from 'next';
 import { Geist_Mono as FontMono, Inter as FontSans } from 'next/font/google';
+
 import './globals.css';
+import { authOptions } from '@/auth';
 import { cn } from '@/lib/utils';
+import { SessionProvider } from '@/providers/session';
+import { getServerSession } from 'next-auth';
 
 const fontSans = FontSans({
 	subsets: ['latin'],
@@ -18,11 +22,13 @@ export const metadata: Metadata = {
 	description: 'Schedule tweets easily and stay consistent without the hassle.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const session = await getServerSession(authOptions);
+
 	return (
 		<html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
 			<body
@@ -32,7 +38,7 @@ export default function RootLayout({
 					fontMono.variable,
 				)}
 			>
-				{children}
+				<SessionProvider session={session}>{children}</SessionProvider>
 			</body>
 		</html>
 	);
