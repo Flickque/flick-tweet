@@ -16,10 +16,10 @@ export function HeaderNav({
 			{...props}
 		>
 			<Link
-				href="/posts"
+				href="/"
 				className={cn(
 					'text-sm font-medium text-muted-foreground transition-colors hover:text-primary',
-					pathname === '/posts' && 'text-primary',
+					pathname === '/' && 'text-primary',
 				)}
 			>
 				Posts

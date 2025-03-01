@@ -1,4 +1,4 @@
-import { HeaderNav } from '@/components/layout/HeaderNav';
+import { HeaderNav } from '@/components/modules/layout/HeaderNav';
 import { UserNav } from '@/components/modules/user/UserNav';
 import Link from 'next/link';
 
@@ -8,7 +8,7 @@ export function Header() {
 			<div className="container flex h-14 items-center justify-between">
 				<div className="flex items-center">
 					<Link href="/" className="mr-6 flex items-center space-x-2">
-						<span className="font-bold">Flick Tweet</span>
+						<span className="font-bold">⌘ INTERN</span>
 					</Link>
 					<HeaderNav />
 				</div>

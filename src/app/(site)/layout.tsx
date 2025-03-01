@@ -1,4 +1,4 @@
-import { Header } from '@/components/layout/Header';
+import { Header } from '@/components/modules/layout/Header';
 import type { ReactNode } from 'react';
 
 export default function SiteLayout({ children }: { children: ReactNode }) {
