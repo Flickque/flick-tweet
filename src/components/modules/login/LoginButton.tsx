@@ -25,6 +25,7 @@ export function LoginButton() {
 			type="button"
 			disabled={isLoading}
 			onClick={handleSignIn}
+			className="max-w-xs mx-auto"
 		>
 			{isLoading ? (
 				<Icons.spinner className="mr-2 h-4 w-4 animate-spin" />

@@ -1,12 +1,12 @@
 import { authOptions } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { PostStatus } from '@prisma/client';
+import { Platform, PostStatus } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const createPostsSchema = z.object({
-	tweets: z.array(
+	posts: z.array(
 		z.object({
 			date: z
 				.string()
@@ -21,7 +21,6 @@ const createPostsSchema = z.object({
 export async function POST(request: Request) {
 	try {
 		const session = await getServerSession(authOptions);
-		console.log('session', session);
 
 		if (!session?.user.email) {
 			return new NextResponse('Unauthorized', { status: 401 });
@@ -40,18 +39,20 @@ export async function POST(request: Request) {
 		const body = createPostsSchema.parse(json);
 
 		const posts = await Promise.all(
-			body.tweets.map((tweet) => {
-				const scheduledAt = new Date(tweet.date);
+			body.posts.map((post) => {
+				const scheduledAt = new Date(post.date);
 				if (Number.isNaN(scheduledAt.getTime())) {
-					throw new Error(`Invalid date: ${tweet.date}`);
+					throw new Error(`Invalid date: ${post.date}`);
 				}
 
 				return prisma.post.create({
 					data: {
-						text: tweet.content,
+						text: post.content,
 						authorId: user.id,
 						scheduledAt,
 						status: PostStatus.SCHEDULED,
+						platform: Platform.TWITTER,
+						mediaUrls: [],
 					},
 				});
 			}),

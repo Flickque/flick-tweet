@@ -1,5 +1,7 @@
 import { LoginButton } from '@/components/modules/login/LoginButton';
+import { LoginScene } from '@/components/modules/login/LoginScene';
 import type { Metadata } from 'next';
+
 export const metadata: Metadata = {
 	title: 'Login - Flick Tweet',
 	description: 'Login to Flick Tweet with your Twitter account',
@@ -13,15 +15,13 @@ export default function Login() {
 					<div className="flex flex-col space-y-2 text-center">
 						<h1 className="text-2xl font-semibold tracking-tight">Welcome!</h1>
 						<p className="text-sm text-muted-foreground">
-							Schedule and manage your tweets with ease.
+							Schedule and manage your post in Twitter and Farcaster with ease.
 						</p>
 					</div>
 					<LoginButton />
 				</div>
 			</div>
-			<div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
-				<div className="absolute inset-0 bg-zinc-900" />
-			</div>
+			<LoginScene />
 		</div>
 	);
 }

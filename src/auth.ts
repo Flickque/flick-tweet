@@ -1,20 +1,36 @@
 import NextAuth, { type AuthOptions } from 'next-auth';
 import TwitterProvider from 'next-auth/providers/twitter';
+import { encryptToken } from './lib/kms';
 import { prisma } from './lib/prisma';
 
 type OAuthAccount = {
 	type: string;
 	provider: string;
 	providerAccountId: string;
+	oauth_token?: string | null;
+	oauth_token_secret?: string | null;
 };
 
 async function linkAccount(userId: string, account: OAuthAccount) {
+	// Encrypt tokens if they exist
+	const encryptedToken =
+		typeof account.oauth_token === 'string'
+			? await encryptToken(account.oauth_token)
+			: undefined;
+
+	const encryptedTokenSecret =
+		typeof account.oauth_token_secret === 'string'
+			? await encryptToken(account.oauth_token_secret)
+			: undefined;
+
 	return prisma.account.create({
 		data: {
 			userId,
 			type: account.type,
 			provider: account.provider,
 			providerAccountId: account.providerAccountId,
+			oauthToken: encryptedToken,
+			oauthTokenSecret: encryptedTokenSecret,
 		},
 	});
 }
@@ -92,7 +108,7 @@ export const authOptions: AuthOptions = {
 					});
 
 					if (!existingAccount) {
-						await linkAccount(dbUser.id, account);
+						await linkAccount(dbUser.id, account as OAuthAccount);
 					}
 
 					// Keep profile update synchronous
@@ -106,6 +122,16 @@ export const authOptions: AuthOptions = {
 				}
 
 				// Create new user with account
+				const encryptedToken =
+					typeof account.oauth_token === 'string'
+						? await encryptToken(account.oauth_token)
+						: undefined;
+
+				const encryptedTokenSecret =
+					typeof account.oauth_token_secret === 'string'
+						? await encryptToken(account.oauth_token_secret)
+						: undefined;
+
 				await prisma.user.create({
 					data: {
 						email: user.email,
@@ -116,6 +142,8 @@ export const authOptions: AuthOptions = {
 								type: account.type,
 								provider: account.provider,
 								providerAccountId: account.providerAccountId,
+								oauthToken: encryptedToken,
+								oauthTokenSecret: encryptedTokenSecret,
 							},
 						},
 					},
@@ -133,6 +161,10 @@ export const authOptions: AuthOptions = {
 				session.user.id = token.sub as string;
 			}
 			return session;
+		},
+
+		async jwt({ token }) {
+			return token;
 		},
 	},
 };

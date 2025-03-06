@@ -1,7 +1,8 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import type { PostStatus } from '@prisma/client';
+import { Icons } from '@/components/ui/icons';
+import type { Platform, PostStatus } from '@prisma/client';
 import type { ColumnDef } from '@tanstack/react-table';
 
 const formatDate = (date: Date) => {
@@ -13,16 +14,26 @@ export type Post = {
 	text: string;
 	scheduledAt: Date | null;
 	status: PostStatus;
+	platform: Platform;
+};
+
+const PlatformIcon = ({ platform }: { platform: Platform }) => {
+	switch (platform) {
+		case 'TWITTER':
+			return <Icons.twitter className="h-4 w-4 fill-foreground" />;
+		case 'FARCASTER':
+			// You can add Farcaster icon here when needed
+			return <Icons.farcaster className="h-4 w-4 fill-foreground" />;
+		default:
+			return null;
+	}
 };
 
 export const columns: ColumnDef<Post>[] = [
 	{
-		accessorKey: 'id',
-		header: 'ID',
-		cell: ({ row }) => {
-			const id: string = row.getValue('id');
-			return <div className="font-mono">{id.slice(0, 8)}...</div>;
-		},
+		accessorKey: 'index',
+		header: '#',
+		cell: ({ row }) => row.index + 1,
 	},
 	{
 		accessorKey: 'text',
@@ -30,8 +41,24 @@ export const columns: ColumnDef<Post>[] = [
 		cell: ({ row }) => {
 			const text: string = row.getValue('text');
 			return (
-				<div className="max-w-[500px] truncate" title={text}>
-					{text}
+				<div className="max-w-3xl w-full" title={text}>
+					<p>{text}</p>
+				</div>
+			);
+		},
+	},
+	{
+		accessorKey: 'platform',
+		header: 'Platform',
+		cell: ({ row }) => {
+			const platform: Platform = row.getValue('platform');
+			return (
+				<div className="flex items-center gap-2">
+					<PlatformIcon platform={platform} />
+					<span className="text-sm">
+						{platform.charAt(0).toUpperCase() +
+							platform.slice(1).toLocaleLowerCase()}
+					</span>
 				</div>
 			);
 		},

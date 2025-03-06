@@ -1,3 +1,4 @@
+import { SendTwitterPostButton } from '@/components/elements/SendTwitterPostButton';
 import { prisma } from '@/lib/prisma';
 import { PostsView } from '@/views/Posts/PostsView';
 import { columns } from '@/views/Posts/columns';
@@ -10,6 +11,13 @@ export const metadata: Metadata = {
 
 export default async function PostsPage() {
 	const posts = await prisma.post.findMany({
+		select: {
+			id: true,
+			text: true,
+			scheduledAt: true,
+			status: true,
+			platform: true,
+		},
 		orderBy: [
 			{
 				scheduledAt: 'desc',
@@ -31,6 +39,9 @@ export default async function PostsPage() {
 				</div>
 			</div>
 			<PostsView data={posts} columns={columns} />
+			{posts.length > 0 && (
+				<SendTwitterPostButton postId={posts[0].id} text={posts[0].text} />
+			)}
 		</div>
 	);
 }

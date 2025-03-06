@@ -13,6 +13,8 @@ model Account {
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
+  oauthToken        String?
+  oauthTokenSecret  String?
   user User @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerAccountId])
@@ -41,8 +43,9 @@ model Post {
   authorId    String    @db.ObjectId
   scheduledAt DateTime? 
   publishedAt DateTime?  
-  status     PostStatus @default(DRAFT)
-  mediaUrls  String[]   @default([])
+  status      PostStatus @default(DRAFT)
+  mediaUrls   String[]   @default([])
+  platform    Platform   @default(TWITTER)
   @@map("Posts")
 }
 
@@ -51,4 +54,9 @@ enum PostStatus {
   SCHEDULED   // Ready to be published at scheduledAt
   PUBLISHED   // Successfully published
   FAILED      // Failed to publish
+}
+
+enum Platform {
+  TWITTER
+  FARCASTER
 }

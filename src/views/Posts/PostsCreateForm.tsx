@@ -34,7 +34,6 @@ export function PostsCreateForm() {
 		setIsLoading(true);
 		try {
 			const posts = parsePosts(values.content);
-			console.log('Parsed posts:', posts);
 
 			const response = await fetch('/api/posts', {
 				method: 'POST',
@@ -50,8 +49,7 @@ export function PostsCreateForm() {
 				throw new Error(`Failed to create posts: ${errorData}`);
 			}
 
-			const result = await response.json();
-			console.log('Created posts:', result);
+			await response.json();
 			form.reset();
 			setIsSuccess(true);
 		} catch (error) {
